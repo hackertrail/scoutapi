@@ -39,7 +39,7 @@ var CompanySearchField = function(apiKey, domId) {
   this._fnhooks = [];
   this.apiKey = apiKey;
   let domElem = document.getElementById(domId);
-  if (domElem == null) throw Exception("DOM element not found");
+  if (domElem == null) throw Error("DOM element not found");
 
   // Create a new div for the spinner
   const spinnerContainer = document.createElement('div');
