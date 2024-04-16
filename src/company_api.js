@@ -277,9 +277,3 @@ var CompanySearchField = function(apiKey, domId) {
       }
     };
   };
-
-let apiKey = "4412166f-1e15-4d1f-9121-20cd5888be5b";
-let a = new CompanySearchField(apiKey, "searchInput");
-a.onCompanySelected(function(companyObject) {
-  console.log("Selected company object:", companyObject);
-});
