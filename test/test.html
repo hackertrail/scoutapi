@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Test for Company API lookup</title>
+    </head>
+    <body>
+        <h1>This is a sample form</h1>
+        <h2>It will post to nowhere</h2>
+        <h3>Use inspector to check the values which get sent</h3>
+        <form method="post" action="#">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" placeholder="Alice Apple"/>
+            <label for="company">Your Company</label>
+            <input type="text" id="company" name="company" placeholder="ACME Inc"/>
+            <button type="submit" id="submit" disabled>Submit</button>
+        </form>
+
+        <script>
+            let init_company = function(){
+                let c = new CompanySearchField("YOUR-API-KEY", "company");
+                c.onCompanySelected(function(o){
+                    document.getElementById("submit").disabled = false;
+                });
+            }
+        </script>
+        <script src="../src/company_api.js" async onload="init_company();"></script>
+    </body>
+</html>
