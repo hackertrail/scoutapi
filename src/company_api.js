@@ -11,6 +11,7 @@ function findNearestPositionedAncestor(element) {
 }
  
 var CompanySearchField = function(apiKey, domId) {
+  let topPosition, leftPosition;
   function positionDropdown(domId) {
     const companyNameInput = document.getElementById(domId);
     const helperDropdown = document.getElementById('helperDropdown');
@@ -20,8 +21,8 @@ var CompanySearchField = function(apiKey, domId) {
       const ancestorRect = ancestor ? ancestor.getBoundingClientRect() : { top: 0, left: 0 };
   
       // Calculate top and left positions relative to the nearest positioned ancestor
-      const topPosition = inputRect.bottom - ancestorRect.top + (ancestor? ancestor.scrollTop:0);
-      const leftPosition = inputRect.left - ancestorRect.left + (ancestor? ancestor.scrollLeft:0);
+      topPosition = inputRect.bottom - ancestorRect.top + (ancestor? ancestor.scrollTop:0);
+      leftPosition = inputRect.left - ancestorRect.left + (ancestor? ancestor.scrollLeft:0);
   
       // Apply calculated positions to helperDropdown
       helperDropdown.style.position = 'absolute';
@@ -29,10 +30,6 @@ var CompanySearchField = function(apiKey, domId) {
       helperDropdown.style.left = `${leftPosition}px`;
     }
   }
-  
-  // Initial positioning
-  positionDropdown(domId);
-  
   // Adapt to various changes
   
   // Consider MutationObserver to observe DOM changes affecting the companyName input or its ancestors
@@ -40,6 +37,18 @@ var CompanySearchField = function(apiKey, domId) {
   this.apiKey = apiKey;
   let domElem = document.getElementById(domId);
   if (domElem == null) throw Error("DOM element not found");
+
+  let searchOptions = document.createElement("DIV");
+  this._dropdownContainer = searchOptions;
+  searchOptions.id = "helperDropdown";
+  if (domElem.nextSibling) {
+    domElem.parentElement.insertBefore(searchOptions, domElem.nextSibling);
+  } else {
+    domElem.appendChild(searchOptions);
+  }
+  
+  // Initial positioning
+  positionDropdown(domId);
 
   // Create a new div for the spinner
   const spinnerContainer = document.createElement('div');
@@ -72,15 +81,6 @@ var CompanySearchField = function(apiKey, domId) {
 
   // Insert the spinner container as the last child of the search input's parent
   domElem.parentNode.appendChild(spinnerContainer);
-
-  let searchOptions = document.createElement("DIV");
-  this._dropdownContainer = searchOptions;
-  searchOptions.id = "helperDropdown";
-  if (domElem.nextSibling) {
-    domElem.parentElement.insertBefore(searchOptions, domElem.nextSibling);
-  } else {
-    domElem.appendChild(searchOptions);
-  }
 
   // Calculate the position for the dropdown container
   const inputRect = domElem.getBoundingClientRect();
@@ -138,19 +138,18 @@ var CompanySearchField = function(apiKey, domId) {
 
   const performSearch = (apiKey) => {
     const searchTerm = domElem.value.trim();
-    console.log('Calling AWS Lambda function...');
-    const lambdaUrl = 'https://4n2s3o0q84.execute-api.ap-southeast-1.amazonaws.com/';
+    const apiUrl = 'https://api.thecompanyapi.io/';
   
     showSpinner(); // Show the spinner
   
     if (searchTerm !== '' && apiKey !== '') {
-      ajax({search: searchTerm, api_key: apiKey}, {api_url: lambdaUrl, request_header: "application/json"})
+      ajax({search: searchTerm, api_key: apiKey}, {api_url: apiUrl, request_header: "application/json"})
         .then(response => {
           populateDropdown(response.data, apiKey);
           hideSpinner(); // Hide the spinner
         })
         .catch(error => {
-          console.error('Error calling Lambda function:', error);
+          console.error('Error calling API:', error);
           hideSpinner(); // Hide the spinner
         });
     } else {
@@ -219,19 +218,15 @@ var CompanySearchField = function(apiKey, domId) {
 
   const handle_click = (companyName, apiKey) => {
     try {
-      const lambdaUrl = 'https://4n2s3o0q84.execute-api.ap-southeast-1.amazonaws.com/';
+      const apiUrl = 'https://api.thecompanyapi.io/';
 
-      return response = ajax({company_name: companyName, api_key: apiKey}, {api_url: lambdaUrl, request_header: "application/json"})
+      return response = ajax({company_name: companyName, api_key: apiKey}, {api_url: apiUrl, request_header: "application/json"})
       .then(response => response.data).catch(error => {
-          console.error('Error calling Lambda function:', error);
+          console.error('Error calling API:', error);
           throw error;
         });
-      // const response = await axios.post(lambdaUrl, requestData, { headers });
-      // const responseData = response.data;
-
-      // return responseData;
     } catch (error) {
-      console.error('Error calling Lambda API:', error);
+      console.error('Error calling API:', error);
       throw error;
     }
   };
