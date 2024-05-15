@@ -97,6 +97,13 @@ var CompanySearchField = function(apiKey, domId) {
   searchOptions.style["border-bottom-left-radius"] = "10px";
   searchOptions.style["border-bottom-right-radius"] = "10px";
   searchOptions.style.maxWidth = (inputRect.width - 20)+"px";
+  searchOptions.style["max-height"]= "300px";
+  searchOptions.style["overflow-y"]= "auto";
+  searchOptions.style["border-left"]= "1px solid";
+  searchOptions.style["border-right"]= "1px solid";
+  searchOptions.style["border-bottom"]= "1px solid";
+  searchOptions.style["box-shadow"]= "5px 4px 19px 2px #c7c7c7";
+  searchOptions.style["display"] = "none"; //by default, keep it hidden
 
   positionDropdown(domId);
   window.addEventListener('resize', positionDropdown);
@@ -111,6 +118,14 @@ var CompanySearchField = function(apiKey, domId) {
     return 'https://webmeet.io/shared/companies/logo.png'; // Placeholder image URL
   };
 
+  const companySearchDropdownShow = (bool) => {
+    if (bool){
+      searchOptions.style["display"] = "block";
+    }else{
+      searchOptions.style["display"] = "none";
+    }
+  }
+  
   const debounce = (func, delay) => {
     let timerId;
 
@@ -189,7 +204,7 @@ var CompanySearchField = function(apiKey, domId) {
       listItem.addEventListener('click', async () => {
         const companyObject = await handle_click(item.company_name, apiKey);
         handleCompanySelected(companyObject); // Call the custom function with the company object
-        searchOptions.classList.remove('show');
+        sompanySearchDropdownShow(false);
         domElem.value = item.company_name;
         clearDropdown();
       });
@@ -204,7 +219,7 @@ var CompanySearchField = function(apiKey, domId) {
         listItem.style.cursor = '';
       });
     });
-    searchOptions.classList.add('show');
+    companySearchDropdownShow(true);
     positionDropdown(domId); // Call the positionDropdown function
     document.addEventListener('click', closeDropdownOutside);
   };
@@ -233,7 +248,7 @@ var CompanySearchField = function(apiKey, domId) {
 
   const clearDropdown = () => {
     searchOptions.innerHTML = '';
-    searchOptions.classList.remove('show');
+    companySearchDropdownShow(false);
     positionDropdown(domId); // Call the positionDropdown function
   };
 
