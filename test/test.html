@@ -1,6 +1,21 @@
 <html>
     <head>
         <title>Test for Company API lookup</title>
+        <style>
+            form{
+                width: 400px;
+                max-width: 80vw;
+                border-radius: 20px;
+                padding: 20px;
+                background: rgb(198, 214, 230);
+                display: block;
+            }
+            label, input{
+                display: block;
+                width: 90%;
+                margin: 5px 5%;
+            }
+        </style>
     </head>
     <body>
         <h1>This is a sample form</h1>
@@ -16,7 +31,7 @@
 
         <script>
             let init_company = function(){
-                let c = new CompanySearchField("YOUR-API-KEY", "company");
+                let c = new CompanySearchField("ec7536bb-a4eb-4688-ba46-c920ce58f9f5", "company");
                 c.onCompanySelected(function(o){
                     document.getElementById("submit").disabled = false;
                 });
