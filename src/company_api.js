@@ -111,12 +111,30 @@ var CompanySearchField = function(apiKey, domId) {
 
   this._selected_company_info = null;
 
-  const addPrefix = (imageId) => {
-    if (imageId && imageId.trim() !== '') {
-      return `https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/${imageId}`;
-    }
-    return 'https://webmeet.io/shared/companies/logo.png'; // Placeholder image URL
-  };
+  const addPrefix = (index_id, imageId) => {
+    const companyLogoUrl = `https://scoutapi.sgp1.digitaloceanspaces.com/company_logos/${index_id}.jpg`;
+    const crunchbaseLogoUrl = imageId && imageId.trim() !== ''
+      ? `https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/${imageId}`
+      : null;
+    const placeholderLogoUrl = 'https://webmeet.io/shared/companies/logo.png';
+  
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img.src);
+      img.onerror = () => {
+        if (crunchbaseLogoUrl) {
+          img.src = crunchbaseLogoUrl;
+        } else {
+          resolve(placeholderLogoUrl);
+        }
+      }
+      img.src = companyLogoUrl;
+  })
+    .catch(() => {
+      // If there's any error, immediately return the backup logo URL
+      return crunchbaseLogoUrl || placeholderLogoUrl;
+    });
+  };  
 
   const companySearchDropdownShow = (bool) => {
     if (bool){
@@ -178,10 +196,19 @@ var CompanySearchField = function(apiKey, domId) {
 
     list.forEach((item, idx, array) => {
       const listItem = document.createElement('div');
+      addPrefix(item.index_id, item.image_id)
+      .then(logoUrl => {
+        console.log('Logo URL:', logoUrl); 
+        listItem.style["background"] = `url("${logoUrl}") no-repeat`;
+      })
+      .catch(error => {
+        console.error('Error loading logo:', error);
+        // You can set a default background here if needed
+        listItem.style["background"] = 'url("https://webmeet.io/shared/companies/logo.png") no-repeat';
+      });
       listItem.classList.add('dropdown-item');
       listItem.dataset.imageId = item.image_id;
       listItem.style["padding-left"] = "55px";
-      listItem.style["background"] = "url("+addPrefix(item.image_id)+") no-repeat";
       listItem.style["background-position"] = "left";
       listItem.style["background-size"] = "50px";
       listItem.style["font-size"] = "15px";
