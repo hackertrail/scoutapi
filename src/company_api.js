@@ -116,7 +116,7 @@ var CompanySearchField = function(apiKey, domId) {
     const crunchbaseLogoUrl = imageId && imageId.trim() !== ''
       ? `https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/${imageId}`
       : null;
-    const placeholderLogoUrl = 'https://webmeet.io/shared/companies/logo.png';
+    const placeholderLogoUrl = 'https://scoutapi.sgp1.cdn.digitaloceanspaces.com/company_logos/office-50x50.png';
   
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -200,23 +200,27 @@ var CompanySearchField = function(apiKey, domId) {
       .then(logoUrl => {
         console.log('Logo URL:', logoUrl); 
         listItem.style["background"] = `url("${logoUrl}") no-repeat`;
+        listItem.style["background-position"] = "left";
+        listItem.style["background-size"] = "50px";
       })
       .catch(error => {
         console.error('Error loading logo:', error);
         // You can set a default background here if needed
-        listItem.style["background"] = 'url("https://webmeet.io/shared/companies/logo.png") no-repeat';
+        listItem.style["background"] = 'url("https://scoutapi.sgp1.cdn.digitaloceanspaces.com/company_logos/office-50x50.png") no-repeat';
+        listItem.style["background-position"] = "left";
+        listItem.style["background-size"] = "50px";
       });
       listItem.classList.add('dropdown-item');
       listItem.dataset.imageId = item.image_id;
       listItem.style["padding-left"] = "55px";
-      listItem.style["background-position"] = "left";
-      listItem.style["background-size"] = "50px";
       listItem.style["font-size"] = "15px";
       listItem.style["overflow"] = "hidden";
       listItem.style["min-height"] = "50px";
       listItem.style["display"] = "flex";
       listItem.style["align-items"] = "center";
-      
+      listItem.style["background-position"] = "left";
+      listItem.style["background-size"] = "50px";
+
       if (idx !== 0) listItem.style["padding-top"] = "5px";
 
       if (idx !== array.length - 1){
@@ -231,7 +235,7 @@ var CompanySearchField = function(apiKey, domId) {
       listItem.addEventListener('click', async () => {
         const companyObject = await handle_click(item.company_name, apiKey);
         handleCompanySelected(companyObject); // Call the custom function with the company object
-        sompanySearchDropdownShow(false);
+        companySearchDropdownShow(false);
         domElem.value = item.company_name;
         clearDropdown();
       });
@@ -293,7 +297,7 @@ var CompanySearchField = function(apiKey, domId) {
     hiddenField.value = companyObject.linkedin_link || '';
   
     // Get the reference to the search input field
-    const searchInput = document.getElementById('searchInput');
+    const searchInput = document.getElementById(domId);
   
     // Insert the hidden field as a sibling after the search input field
     searchInput.parentNode.insertBefore(hiddenField, searchInput.nextSibling);
