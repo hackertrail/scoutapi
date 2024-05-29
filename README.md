@@ -6,7 +6,7 @@
   <h2>Usage</h2>
   <ol>
     <li>Include the required JavaScript file in your HTML file:
-        <pre><code>&lt;script src="https://files.thecompanyapi.io/js/companyapi.min.js" &gt;&lt;/script&gt;</code></pre>
+        <pre><code>&lt;script src="https://app.thecompanyapi.io/js/companyapi.min.js" &gt;&lt;/script&gt;</code></pre>
     </li>
     <li>Create an HTML element for the search input field:
       <pre><code>&lt;input type="text" id="searchInput" placeholder="Search for a company"&gt;</code></pre>
