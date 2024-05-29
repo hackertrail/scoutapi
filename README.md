@@ -3,6 +3,15 @@
   <h1>CompanySearchField</h1>
   <p>The <code>CompanySearchField</code> class provides a search input field with a dropdown that populates with company suggestions based on the user's input. When a company is selected from the dropdown, the class allows you to register callback functions that will be executed with the selected company's information.</p>
 
+  <h2>API key</h2>
+  <p>To use the services provided by TheCompanyAPI, follow these steps to obtain your API key:</p>
+  <ol>
+    <li>Visit <a href="https://w3.thecompanyapi.io/">TheCompanyAPI</a> Website</li>
+    <li>On the homepage, click the 'Get API Key' button.</li>
+    <li>Select the plan that suits your needs. Note that some plans may require payment.</li>
+    <li>Follow the prompts to enter your payment information and complete the purchase if your chosen plan requires it.</li>
+    <li>Your API key will be emailed to you after selecting your plan and completing any necessary payments.</li>
+</ol>
   <h2>Usage</h2>
   <ol>
     <li>Include the required JavaScript file in your HTML file:
