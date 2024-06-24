@@ -193,12 +193,17 @@ var CompanySearchField = function(apiKey, domId) {
 
   const populateDropdown = (list, apiKey) => {
     clearDropdown();
+    if (list.length === 0) {
+        companySearchDropdownShow(false); // Hide the dropdown if no items
+        clearDropdown();
+        return; // Exit the function
+    }
 
     list.forEach((item, idx, array) => {
       const listItem = document.createElement('div');
       addPrefix(item.index_id, item.image_id)
       .then(logoUrl => {
-        console.log('Logo URL:', logoUrl); 
+        console.log('Logo URL:', logoUrl);
         listItem.style["background"] = `url("${logoUrl}") no-repeat`;
         listItem.style["background-position"] = "left";
         listItem.style["background-size"] = "50px";
