@@ -1,4 +1,12 @@
+/**
+ * Sends an AJAX request with flexible options.
+ * @function
+ * @param {Object} e - The payload to send.
+ * @param {Object} [c] - Optional config overrides: api_url, method, headers, etc.
+ * @returns {Promise<any>} Resolves with parsed response or rejects with error object.
+ */
 window.ajax=function(e,c){var b={api_url:"/api",request_header:"application/json",json_return:!0,method:"POST"};if("object"==typeof c)for(var f in c)c.hasOwnProperty(f)&&(b[f]=c[f]);var k="application/json"===b.request_header?JSON.stringify(e):Object.keys(e).map(d=>`${encodeURIComponent(d)}=${encodeURIComponent(e[d])}`).join("&");return new Promise((d,g)=>{var a=new XMLHttpRequest;a.open(b.method,b.api_url);a.setRequestHeader("Content-Type",b.request_header);a.onload= function(){if(200===a.status){var h=b.json_return?JSON.parse(a.responseText):a.responseText;d(h)}else try{h=JSON.parse(a.responseText),g({status:a.status,statusText:a.statusText,error:h})}catch(l){g({status:a.status,statusText:a.statusText,error:a.responseText})}};a.onerror=function(){g({status:a.status,statusText:"Network Error",error:null})};a.send(k)})};
+
 function findNearestPositionedAncestor(element) {
   while (element && element !== document.body) {
     const style = window.getComputedStyle(element);
@@ -9,9 +17,20 @@ function findNearestPositionedAncestor(element) {
   }
   return null; // Fallback to document.body if no positioned ancestor is found
 }
- 
+
+/**
+* Initializes a LinkedIn-style company autocomplete component.
+* @constructor
+* @param {string} apiKey - The API key to authenticate requests.
+* @param {string} domId - The ID of the input element to bind.
+*/
 var CompanySearchField = function(apiKey, domId) {
   let topPosition, leftPosition;
+
+  /**
+   * Positions the dropdown relative to the input element.
+   * @param {string} domId - ID of the input.
+   */
   function positionDropdown(domId) {
     const companyNameInput = document.getElementById(domId);
     const helperDropdown = document.getElementById('helperDropdown');
@@ -50,7 +69,7 @@ var CompanySearchField = function(apiKey, domId) {
   // Initial positioning
   positionDropdown(domId);
 
-  // Create a new div for the spinner
+  // Spinner setup
   const spinnerContainer = document.createElement('div');
   spinnerContainer.id = 'spinnerContainer';
   spinnerContainer.style.display = 'none'; // Initially hidden
@@ -111,30 +130,36 @@ var CompanySearchField = function(apiKey, domId) {
 
   this._selected_company_info = null;
 
+  /**
+   * Resolves to a logo URL (company, Crunchbase, or fallback).
+   * @param {string} index_id 
+   * @param {string} imageId 
+   * @returns {Promise<string>} - URL of valid logo.
+   */
   const addPrefix = (index_id, imageId) => {
-    const companyLogoUrl = `https://scoutapi.sgp1.digitaloceanspaces.com/company_logos/${index_id}.jpg`;
+      const companyLogoUrl = `https://scoutapi.sgp1.digitaloceanspaces.com/company_logos/${index_id}.jpg`;
     const crunchbaseLogoUrl = imageId && imageId.trim() !== ''
-      ? `https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/${imageId}`
-      : null;
-    const placeholderLogoUrl = 'https://scoutapi.sgp1.cdn.digitaloceanspaces.com/company_logos/office-50x50.png';
-  
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img.src);
-      img.onerror = () => {
-        if (crunchbaseLogoUrl) {
-          img.src = crunchbaseLogoUrl;
-        } else {
-          resolve(placeholderLogoUrl);
-        }
+          ? `https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/${imageId}`
+          : null;
+      const placeholderLogoUrl = 'https://scoutapi.sgp1.cdn.digitaloceanspaces.com/company_logos/office-50x50.png';
+
+      return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img.src);
+          img.onerror = () => {
+              if (crunchbaseLogoUrl) {
+                  img.src = crunchbaseLogoUrl;
+              } else {
+                  resolve(placeholderLogoUrl);
+              }
       }
-      img.src = companyLogoUrl;
+          img.src = companyLogoUrl;
   })
     .catch(() => {
       // If there's any error, immediately return the backup logo URL
       return crunchbaseLogoUrl || placeholderLogoUrl;
     });
-  };  
+  };
 
   const companySearchDropdownShow = (bool) => {
     if (bool){
@@ -143,16 +168,16 @@ var CompanySearchField = function(apiKey, domId) {
       searchOptions.style["display"] = "none";
     }
   }
-  
-  const debounce = (func, delay) => {
-    let timerId;
 
-    return (...args) => {
-      clearTimeout(timerId);
+  const debounce = (func, delay) => {
+      let timerId;
+
+      return (...args) => {
+          clearTimeout(timerId);
       timerId = setTimeout(() => {
         func.apply(this, args);
       }, delay);
-    };
+      };
   };
 
   const showSpinner = () => {
@@ -294,6 +319,10 @@ var CompanySearchField = function(apiKey, domId) {
   });
   domElem.addEventListener('click', positionDropdown);
 
+  /**
+   * Handles when a company is selected from dropdown.
+   * @param {Object} companyObject - The selected company.
+   */
   const handleCompanySelected = (companyObject) => {
     // Create a new hidden input field
     const hiddenField = document.createElement('input');
@@ -315,11 +344,16 @@ var CompanySearchField = function(apiKey, domId) {
     }
   };
 
+  /**
+   * Register callback when a company is selected.
+   * @param {function} fn - Function to call on selection.
+   * @returns {boolean} - Whether hook was added.
+   */
   this.onCompanySelected = (fn) => {
-    if (typeof fn === "function") {
-      this._fnhooks.push(fn);
-    } else {
-      return false;
-    }
+      if (typeof fn === "function") {
+          this._fnhooks.push(fn);
+      } else {
+          return false;
+      }
   };
 };
